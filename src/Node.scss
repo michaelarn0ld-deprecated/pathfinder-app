@@ -1,0 +1,13 @@
+.node {
+  height: 1.6vw;
+  width: 1.6vw;
+  border: 1px solid black;
+  margin: 0.1vw;
+  border-radius: 5px;
+  &:hover {
+    background-color: red;
+  }
+  &.active {
+    background-color: green;
+  }
+}
