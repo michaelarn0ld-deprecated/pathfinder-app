@@ -1,15 +1,8 @@
 import React from 'react';
 import './Node.scss';
-import { useState } from 'react';
 
 function Node({ row, col }) {
-  const [active, setActive] = useState(false);
-  return (
-    <div
-      className={`node ${active ? 'active' : ''}`}
-      onClick={() => setActive(!active)}
-    ></div>
-  );
+  return <div className={`node R${row} C${col}`}></div>;
 }
 
 export default Node;

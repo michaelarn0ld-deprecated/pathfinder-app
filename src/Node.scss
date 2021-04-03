@@ -4,10 +4,17 @@
   border: 1px solid black;
   margin: 0.1vw;
   border-radius: 5px;
+
   &:hover {
     background-color: red;
   }
-  &.active {
-    background-color: green;
+  &.travel {
+    background-color: red;
+  }
+  &.start-node {
+    background-color: rgb(0, 30, 128);
+  }
+  &.end-node {
+    background-color: rgb(21, 128, 0);
   }
 }
