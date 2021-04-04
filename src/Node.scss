@@ -8,11 +8,23 @@
   &:hover {
     background-color: red;
   }
+  &.wall {
+    background-color: grey;
+  }
+
   &.travel {
-    background-color: red;
+    background-color: salmon;
+    transition: 900ms;
+  }
+  &.route {
+    background-color: blue;
+    transition: 900ms;
+  }
+  &.address {
+    background-color: black;
   }
   &.start-node {
-    background-color: rgb(0, 30, 128);
+    background-color: rgb(255, 4, 221);
   }
   &.end-node {
     background-color: rgb(21, 128, 0);
