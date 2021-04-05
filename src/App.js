@@ -5,7 +5,7 @@ import './App.scss';
 
 function App() {
   const nodes = [];
-  for (let row = 0; row < 20; row++) {
+  for (let row = 0; row < 22; row++) {
     const currentRow = [];
     for (let col = 0; col < 50; col++) {
       currentRow.push(true);
@@ -14,14 +14,23 @@ function App() {
   }
 
   let documentNodes;
-  let wallToggle = false;
+  let wallToggle,
+    nodeToggle,
+    startToggle,
+    endToggle = false;
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'w') wallToggle = true;
+    if (e.key === 'd') nodeToggle = true;
+    if (e.key === 's') startToggle = true;
+    if (e.key === 'e') endToggle = true;
   });
 
   document.addEventListener('keyup', () => {
     wallToggle = false;
+    nodeToggle = false;
+    startToggle = false;
+    endToggle = false;
   });
 
   useEffect(() => {
@@ -29,6 +38,31 @@ function App() {
     documentNodes.forEach((node) => {
       node.addEventListener('mouseover', () => {
         if (wallToggle) node.classList.add('wall');
+      });
+      node.addEventListener('click', () => {
+        if (nodeToggle) {
+          node.classList.remove('address');
+          node.classList.add('address');
+          if (!parcels.includes(node) && node.classList.value.includes('node'))
+            parcels.push(node);
+        }
+        if (startToggle) {
+          documentNodes.forEach((node) => {
+            if (node.classList.contains('start-node'))
+              node.classList.remove('start-node');
+          });
+          node.classList.add('start-node');
+          startNode = node;
+        }
+
+        if (endToggle) {
+          documentNodes.forEach((node) => {
+            if (node.classList.contains('end-node'))
+              node.classList.remove('end-node');
+          });
+          node.classList.add('end-node');
+          endNode = node;
+        }
       });
     });
   });
@@ -38,7 +72,6 @@ function App() {
   let endSearch;
   let searchTime = 0;
   let routeTime = 0;
-  let parcelNode;
   const parcels = [];
   const directions = [];
   let trigger = false;
@@ -46,43 +79,17 @@ function App() {
   // ----------------------------------------------------------------
   // ----------------------------------------------------------------
 
-  const startButton = () => {
-    documentNodes.forEach((node) => {
-      if (node.classList.contains('start-node'))
-        node.classList.remove('start-node');
-    });
-    document.addEventListener('mouseup', function startNodeHandler(e) {
-      e.currentTarget.removeEventListener(e.type, startNodeHandler);
-      startNode = document.elementFromPoint(e.pageX, e.pageY - 15);
-      startNode.classList.add('start-node');
-    });
-  };
-
-  const endButton = () => {
-    documentNodes.forEach((node) => {
-      if (node.classList.contains('end-node'))
-        node.classList.remove('end-node');
-    });
-    document.addEventListener('mouseup', function endNodeHandler(e) {
-      e.currentTarget.removeEventListener(e.type, endNodeHandler);
-      endNode = document.elementFromPoint(e.pageX, e.pageY - 15);
-      endNode.classList.add('end-node');
-    });
-  };
-
-  const addAddress = () => {
-    document.addEventListener('mouseup', function parcelNodeHandler(e) {
-      e.currentTarget.removeEventListener(e.type, parcelNodeHandler);
-      parcelNode = document.elementFromPoint(e.pageX, e.pageY - 15);
-      parcelNode.classList.remove('address');
-      parcelNode.classList.add('address');
-      if (
-        !parcels.includes(parcelNode) &&
-        parcelNode.classList.value.includes('node')
-      )
-        parcels.push(parcelNode);
-    });
-  };
+  // const startButton = () => {
+  //   documentNodes.forEach((node) => {
+  //     if (node.classList.contains('start-node'))
+  //       node.classList.remove('start-node');
+  //   });
+  //   document.addEventListener('mouseup', function startNodeHandler(e) {
+  //     e.currentTarget.removeEventListener(e.type, startNodeHandler);
+  //     startNode = document.elementFromPoint(e.pageX, e.pageY - 15);
+  //     startNode.classList.add('start-node');
+  //   });
+  // };
 
   const pathButton = () => {
     const nodesArray = [...documentNodes].map((node) => node.classList);
@@ -132,6 +139,12 @@ function App() {
     }
 
     function findRoute(graph, from, to) {
+      documentNodes.forEach((node) => {
+        if (node.classList.contains('travel')) {
+          node.classList.remove('travel');
+          node.classList.add('nomo');
+        }
+      });
       if (to.length === 0 && !trigger) {
         endSearch = from;
         triggerEndNode();
@@ -139,7 +152,6 @@ function App() {
       } else if (to.length === 0 && trigger) {
         return;
       }
-
       let work = [{ at: from, route: [] }];
       for (let i = 0; i < work.length; i++) {
         searchTime = 4 * i;
@@ -159,7 +171,6 @@ function App() {
               }, 60 * j + searchTime);
               routeTime += 60 * j;
             }
-
             return setTimeout(() => {
               findRoute(graph, pop, to);
             }, routeTime);
@@ -197,22 +208,41 @@ function App() {
 
   return (
     <div className="main">
-      <div className="buttons">
-        <h2 onMouseDown={() => startButton()}>Start</h2>
-        <h2 onMouseDown={() => endButton()}>End</h2>
-        <h2 onMouseDown={() => addAddress()}>Add Address</h2>
+      <div className="navbar">
         <h2 onClick={() => pathButton()}>Find Path</h2>
+        <div className="start-legend">
+          <div className="start-legend-graphic"></div>
+          <h3>Start</h3>
+        </div>
+        <div className="end-legend">
+          <div className="end-legend-graphic"></div>
+          <h3>End</h3>
+        </div>
+        <div className="wall-legend">
+          <div className="wall-legend-graphic"></div>
+          <h3>Wall</h3>
+        </div>
+        <div className="detour-legend">
+          <div className="detour-legend-graphic"></div>
+          <h3>Detour</h3>
+        </div>
+        <div className="path-legend">
+          <div className="path-legend-graphic"></div>
+          <h3>Path</h3>
+        </div>
       </div>
-      {nodes.map((row, index) => {
-        let rowIdx = index;
-        return (
-          <div className="row" key={index}>
-            {row.map((col, index) => {
-              return <Node key={(rowIdx, index)} row={rowIdx} col={index} />;
-            })}
-          </div>
-        );
-      })}
+      <div className="nodes">
+        {nodes.map((row, index) => {
+          let rowIdx = index;
+          return (
+            <div className="row" key={index}>
+              {row.map((col, index) => {
+                return <Node key={(rowIdx, index)} row={rowIdx} col={index} />;
+              })}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

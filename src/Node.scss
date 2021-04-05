@@ -1,32 +1,37 @@
 .node {
-  height: 1.6vw;
-  width: 1.6vw;
-  border: 1px solid black;
-  margin: 0.1vw;
-  border-radius: 5px;
+  height: 1.65vw;
+  width: 1.65vw;
+  border: 0.25px solid #66ced6;
+  background-color: white;
+  margin: 1px;
+  // transition: 900ms;
 
   &:hover {
-    background-color: red;
+    background-color: #efea5a83;
   }
   &.wall {
-    background-color: grey;
+    background-color: #1a2c42;
+  }
+  &.nomo {
+    background-color: white;
+    transition: 700ms;
   }
 
   &.travel {
-    background-color: salmon;
+    background-color: #efea5a83;
     transition: 900ms;
   }
   &.route {
-    background-color: blue;
+    background-color: #f29e4c;
     transition: 900ms;
   }
   &.address {
-    background-color: black;
+    background-color: #a4036f;
   }
   &.start-node {
-    background-color: rgb(255, 4, 221);
+    background-color: #16db93;
   }
   &.end-node {
-    background-color: rgb(21, 128, 0);
+    background-color: #048ba8;
   }
 }

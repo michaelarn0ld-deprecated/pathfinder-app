@@ -1,24 +1,64 @@
+* {
+  margin: 0;
+  font-family: 'Roboto Mono', monospace;
+}
 .main {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background: white;
 }
-.buttons {
+.navbar {
   display: flex;
   justify-content: space-evenly;
   width: 100%;
+  margin: 3vh;
+  color: white;
   & > h2 {
     padding: 5px 18px;
-    border: 1px solid black;
+    border: 1px solid #048ba8;
     border-radius: 8px;
     transition: 200ms;
     cursor: pointer;
+    background-color: #16db93;
     &:hover {
-      background-color: grey;
+      background-color: #66ced6;
     }
   }
+  & div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  & > div > div {
+    height: 70%;
+    width: 32px;
+    margin-right: 10px;
+  }
+  & > div > h3 {
+    color: black;
+  }
+}
+.start-legend-graphic {
+  background-color: #16db93;
+}
+
+.end-legend-graphic {
+  background-color: #048ba8;
+}
+
+.wall-legend-graphic {
+  background-color: #1a2c42;
+}
+
+.detour-legend-graphic {
+  background-color: #a4036f;
+}
+
+.path-legend-graphic {
+  background-color: #f29e4c;
 }
 
 .row {
