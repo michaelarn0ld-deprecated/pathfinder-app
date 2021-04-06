@@ -1,11 +1,12 @@
 import React from 'react';
-import Node from './Node';
+import Node from './components/Node';
+import Tutorial from './components/Tutorial';
 import { useEffect } from 'react';
 import './App.scss';
 
-function App() {
+export default function App() {
   const nodes = [];
-  for (let row = 0; row < 22; row++) {
+  for (let row = 0; row < 23; row++) {
     const currentRow = [];
     for (let col = 0; col < 50; col++) {
       currentRow.push(true);
@@ -20,10 +21,22 @@ function App() {
     endToggle = false;
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'w') wallToggle = true;
-    if (e.key === 'd') nodeToggle = true;
-    if (e.key === 's') startToggle = true;
-    if (e.key === 'e') endToggle = true;
+    switch (e.key) {
+      case 'w':
+        wallToggle = true;
+        break;
+      case 'd':
+        nodeToggle = true;
+        break;
+      case 's':
+        startToggle = true;
+        break;
+      case 'e':
+        endToggle = true;
+        break;
+      default:
+        break;
+    }
   });
 
   document.addEventListener('keyup', () => {
@@ -72,144 +85,150 @@ function App() {
   let endSearch;
   let searchTime = 0;
   let routeTime = 0;
-  const parcels = [];
+  let parcels = [];
   const directions = [];
   let trigger = false;
 
-  // ----------------------------------------------------------------
-  // ----------------------------------------------------------------
-
-  // const startButton = () => {
-  //   documentNodes.forEach((node) => {
-  //     if (node.classList.contains('start-node'))
-  //       node.classList.remove('start-node');
-  //   });
-  //   document.addEventListener('mouseup', function startNodeHandler(e) {
-  //     e.currentTarget.removeEventListener(e.type, startNodeHandler);
-  //     startNode = document.elementFromPoint(e.pageX, e.pageY - 15);
-  //     startNode.classList.add('start-node');
-  //   });
-  // };
-
   const pathButton = () => {
-    const nodesArray = [...documentNodes].map((node) => node.classList);
-    const stringifyNodesArray = [...documentNodes].map((item) => {
-      if (!item.classList.value.includes('wall')) {
-        let splitter = item.classList.value.split(' ');
-        return `${splitter[0]} ${splitter[1]} ${splitter[2]}`;
-      }
-      return item.classList.value;
-    });
-
-    const graph = nodesArray.map((node) => {
-      const row = Number(node[1].substring(1));
-      const col = Number(node[2].substring(1));
-
-      const thisNode = `.node.R${row}.C${col}`;
-
-      const upNode = stringifyNodesArray.includes(`node R${row - 1} C${col}`)
-        ? `.node.R${row - 1}.C${col}`
-        : null;
-      const downNode = stringifyNodesArray.includes(`node R${row + 1} C${col}`)
-        ? `.node.R${row + 1}.C${col}`
-        : null;
-      const leftNode = stringifyNodesArray.includes(`node R${row} C${col - 1}`)
-        ? `.node.R${row}.C${col - 1}`
-        : null;
-      const rightNode = stringifyNodesArray.includes(`node R${row} C${col + 1}`)
-        ? `.node.R${row}.C${col + 1}`
-        : null;
-
-      let nodeGraph = Object.create(null);
-      nodeGraph[thisNode] = [upNode, downNode, leftNode, rightNode].filter(
-        (item) => item != null
-      );
-
-      return nodeGraph;
-    });
-
-    let newGraph = Object.create(null);
-    for (let i = 0; i < graph.length; i++) {
-      newGraph[Object.keys(graph[i])[0]] = graph[i][Object.keys(graph[i])[0]];
-    }
-
-    for (let parcel of parcels) {
-      let item = parcel.classList.value.split(' ');
-      directions.push(`.${item[0]}.${item[1]}.${item[2]}`);
-    }
-
-    function findRoute(graph, from, to) {
-      documentNodes.forEach((node) => {
-        if (node.classList.contains('travel')) {
-          node.classList.remove('travel');
-          node.classList.add('nomo');
+    if (startNode === undefined || endNode === undefined)
+      alert('Select a start node and an end node');
+    else {
+      const nodesArray = [...documentNodes].map((node) => node.classList);
+      const stringifyNodesArray = [...documentNodes].map((item) => {
+        if (!item.classList.value.includes('wall')) {
+          let splitter = item.classList.value.split(' ');
+          return `${splitter[0]} ${splitter[1]} ${splitter[2]}`;
         }
+        return item.classList.value;
       });
-      if (to.length === 0 && !trigger) {
-        endSearch = from;
-        triggerEndNode();
-        return;
-      } else if (to.length === 0 && trigger) {
-        return;
-      }
-      let work = [{ at: from, route: [] }];
-      for (let i = 0; i < work.length; i++) {
-        searchTime = 4 * i;
-        setTimeout(() => {
-          document.querySelector(`${work[i].at}`).classList.add('travel');
-        }, searchTime);
-        let { at, route } = work[i];
-        for (let place of graph[at]) {
-          if (to.includes(place)) {
-            let index = to.indexOf(place);
-            let pop = to.splice(index, 1);
+      let startGraph = startNode.classList.value.split(' ');
+      startGraph = `.${startGraph[0]}.${startGraph[1]}.${startGraph[2]}`;
+      let endGraph = endNode.classList.value.split(' ');
+      endGraph = `.${endGraph[0]}.${endGraph[1]}.${endGraph[2]}`;
 
-            for (let j = 0; j < route.length; j++) {
-              routeTime = searchTime;
-              setTimeout(() => {
-                document.querySelector(`${route[j]}`).classList.add('route');
-              }, 60 * j + searchTime);
-              routeTime += 60 * j;
-            }
-            return setTimeout(() => {
-              findRoute(graph, pop, to);
-            }, routeTime);
+      const graph = nodesArray.map((node) => {
+        const row = Number(node[1].substring(1));
+        const col = Number(node[2].substring(1));
+
+        const thisNode = `.node.R${row}.C${col}`;
+
+        const upNode = stringifyNodesArray.includes(`node R${row - 1} C${col}`)
+          ? `.node.R${row - 1}.C${col}`
+          : null;
+        const downNode = stringifyNodesArray.includes(
+          `node R${row + 1} C${col}`
+        )
+          ? `.node.R${row + 1}.C${col}`
+          : null;
+        const leftNode = stringifyNodesArray.includes(
+          `node R${row} C${col - 1}`
+        )
+          ? `.node.R${row}.C${col - 1}`
+          : null;
+        const rightNode = stringifyNodesArray.includes(
+          `node R${row} C${col + 1}`
+        )
+          ? `.node.R${row}.C${col + 1}`
+          : null;
+
+        let nodeGraph = Object.create(null);
+        nodeGraph[thisNode] = [upNode, downNode, leftNode, rightNode].filter(
+          (item) => item != null
+        );
+
+        return nodeGraph;
+      });
+
+      let newGraph = Object.create(null);
+      for (let i = 0; i < graph.length; i++) {
+        newGraph[Object.keys(graph[i])[0]] = graph[i][Object.keys(graph[i])[0]];
+      }
+
+      for (let parcel of parcels) {
+        let item = parcel.classList.value.split(' ');
+        directions.push(`.${item[0]}.${item[1]}.${item[2]}`);
+      }
+
+      function findRoute(graph, from, to) {
+        documentNodes.forEach((node) => {
+          if (node.classList.contains('travel')) {
+            node.classList.remove('travel');
+            node.classList.add('nomo');
           }
-          if (!work.some((w) => w.at == place)) {
-            work.push({ at: place, route: route.concat(place) });
+        });
+        if (to.length === 0 && !trigger) {
+          endSearch = from;
+          triggerEndNode();
+          return;
+        } else if (to.length === 0 && trigger) {
+          return;
+        }
+        let work = [{ at: from, route: [] }];
+        for (let i = 0; i < work.length; i++) {
+          searchTime = 4 * i;
+          setTimeout(() => {
+            document.querySelector(`${work[i].at}`).classList.add('travel');
+          }, searchTime);
+          let { at, route } = work[i];
+          for (let place of graph[at]) {
+            if (to.includes(place)) {
+              let index = to.indexOf(place);
+              let pop = to.splice(index, 1);
+              for (let j = 0; j < route.length; j++) {
+                routeTime = searchTime;
+                setTimeout(() => {
+                  document.querySelector(`${route[j]}`).classList.add('route');
+                }, 60 * j + searchTime);
+                routeTime += 60 * j;
+              }
+              return setTimeout(() => {
+                findRoute(graph, pop, to);
+              }, routeTime);
+            }
+            if (!work.some((w) => w.at == place)) {
+              work.push({ at: place, route: route.concat(place) });
+            }
           }
         }
       }
+
+      const triggerEndNode = () => {
+        trigger = true;
+        findRoute(newGraph, endSearch[0], [endGraph]);
+      };
+
+      if (parcels.length > 0) findRoute(newGraph, startGraph, directions);
+      else {
+        trigger = true;
+        findRoute(newGraph, startGraph, [endGraph]);
+      }
     }
-
-    // --------------------------------------------------------------
-    let startGraph = startNode.classList.value.split(' ');
-    startGraph = `.${startGraph[0]}.${startGraph[1]}.${startGraph[2]}`;
-
-    let endGraph = endNode.classList.value.split(' ');
-    endGraph = `.${endGraph[0]}.${endGraph[1]}.${endGraph[2]}`;
-
-    findRoute(newGraph, startGraph, directions);
-
-    let p = new Promise((resolve, reject) => {
-      let response = true;
-      if (response) resolve('success');
-      else reject('failure');
-    });
-
-    const triggerEndNode = () => {
-      trigger = true;
-      p.then(() => findRoute(newGraph, endSearch[0], [endGraph]));
-    };
   };
 
-  // ----------------------------------------------------------------
-  // ----------------------------------------------------------------
+  const clearBoard = () => {
+    documentNodes.forEach((node) => {
+      if (node.classList.length >= 3)
+        node.classList.remove(
+          'travel',
+          'nomo',
+          'start-node',
+          'end-node',
+          'wall',
+          'address',
+          'route'
+        );
+    });
+    parcels = [];
+    trigger = false;
+    startNode = undefined;
+    endNode = undefined;
+  };
 
   return (
     <div className="main">
       <div className="navbar">
         <h2 onClick={() => pathButton()}>Find Path</h2>
+        <h2 onClick={() => clearBoard()}>Clear Board</h2>
         <div className="start-legend">
           <div className="start-legend-graphic"></div>
           <h3>Start</h3>
@@ -243,8 +262,7 @@ function App() {
           );
         })}
       </div>
+      <Tutorial />
     </div>
   );
 }
-
-export default App;

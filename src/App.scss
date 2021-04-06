@@ -1,40 +1,48 @@
 * {
   margin: 0;
   font-family: 'Roboto Mono', monospace;
+  overflow: hidden;
 }
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: top;
   align-items: center;
   height: 100vh;
   background: white;
+  position: relative;
 }
 .navbar {
   display: flex;
   justify-content: space-evenly;
   width: 100%;
   margin: 3vh;
+  height: 6vh;
   color: white;
   & > h2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 5px 18px;
-    border: 1px solid #048ba8;
+    width: 12%;
+    text-align: center;
+    border: 1px solid #2b2d42;
     border-radius: 8px;
     transition: 200ms;
     cursor: pointer;
-    background-color: #16db93;
+    background-color: #2b2d42;
     &:hover {
-      background-color: #66ced6;
+      background-color: #7a5980;
     }
   }
   & div {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
   }
   & > div > div {
-    height: 70%;
-    width: 32px;
+    height: 4.2vh;
+    width: 4.2vh;
     margin-right: 10px;
   }
   & > div > h3 {

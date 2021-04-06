@@ -1,0 +1,82 @@
+.tutorial-open {
+  top: 0;
+  position: absolute;
+  height: 65vh;
+  width: 50%;
+  background-color: white;
+  border: 2px solid #2b2d42;
+  border-radius: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  transition: 900ms;
+  transform: translateY(20vh);
+  color: #2b2d42;
+}
+.tutorial-closed {
+  top: 0;
+  position: absolute;
+  height: 6vh;
+  width: 50%;
+  background-color: #2b2d42;
+  border: 2px solid #2b2d42;
+  border-radius: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 900ms, height 900ms, background-color 900ms 900ms,
+    color 900ms 900ms;
+  transform: translateY(calc(86vh + 55px));
+  color: white;
+  &:hover {
+    background: white;
+    transition: 900ms;
+    color: #2b2d42;
+  }
+}
+
+.arrow-up {
+  transform: rotate(180deg);
+  transition: transform 900ms;
+  cursor: pointer;
+}
+
+.arrow-down {
+  transform: translateY(1vh);
+  transition: 900ms;
+  cursor: pointer;
+}
+
+.tutorial-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 95%;
+  line-height: 30px;
+  margin-bottom: 3vh;
+}
+
+.tutorial-opener {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  &-words {
+    border-bottom: 2px solid #2b2d42;
+    padding-bottom: 10px;
+    width: 100%;
+    text-align: center;
+  }
+  cursor: default;
+}
+
+.far {
+  font-size: 1.5rem;
+  transform: translateY(7px);
+}
+.fas.fa-book {
+  transform: translateY(5px);
+}
