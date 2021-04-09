@@ -88,6 +88,8 @@ export default function App() {
   let parcels = [];
   const directions = [];
   let trigger = false;
+  let permGraph = Object.create(null);
+  let permArray = [];
 
   const pathButton = () => {
     if (startNode === undefined || endNode === undefined)
@@ -149,41 +151,94 @@ export default function App() {
         directions.push(`.${item[0]}.${item[1]}.${item[2]}`);
       }
 
-      function findRoute(graph, from, to) {
+      // ----------------------------------------------------------
+
+      // function findRoute(graph, from, to) {
+      //   documentNodes.forEach((node) => {
+      //     if (node.classList.contains('travel')) {
+      //       node.classList.remove('travel');
+      //       node.classList.add('nomo');
+      //     }
+      //   });
+      //   if (to.length === 0 && !trigger) {
+      //     endSearch = from;
+      //     triggerEndNode();
+      //     return;
+      //   } else if (to.length === 0 && trigger) {
+      //     return;
+      //   }
+      //   let work = [{ at: from, route: [] }];
+      //   for (let i = 0; i < work.length; i++) {
+      //     searchTime = 4 * i;
+      //     setTimeout(() => {
+      //       document.querySelector(`${work[i].at}`).classList.add('travel');
+      //     }, searchTime);
+      //     let { at, route } = work[i];
+      //     for (let place of graph[at]) {
+      //       if (to.includes(place)) {
+      //         let index = to.indexOf(place);
+      //         let pop = to.splice(index, 1);
+      //         for (let j = 0; j < route.length; j++) {
+      //           routeTime = searchTime;
+      //           setTimeout(() => {
+      //             document.querySelector(`${route[j]}`).classList.add('route');
+      //           }, 60 * j + searchTime);
+      //           routeTime += 60 * j;
+      //         }
+      //         return setTimeout(() => {
+      //           findRoute(graph, pop, to);
+      //         }, routeTime);
+      //       }
+      //       if (!work.some((w) => w.at == place)) {
+      //         work.push({ at: place, route: route.concat(place) });
+      //       }
+      //     }
+      //   }
+      // }
+
+      // ----------------------------------------------------------
+
+      function findRoute(graph, from, to, array) {
         documentNodes.forEach((node) => {
           if (node.classList.contains('travel')) {
             node.classList.remove('travel');
             node.classList.add('nomo');
           }
         });
-        if (to.length === 0 && !trigger) {
-          endSearch = from;
-          triggerEndNode();
-          return;
-        } else if (to.length === 0 && trigger) {
-          return;
+        if (to.length === 0) {
+          array.splice(array.indexOf(from), 1, 0);
+          // console.log(array);
+          // console.log('------------------');
+          permArray.push(array);
         }
         let work = [{ at: from, route: [] }];
         for (let i = 0; i < work.length; i++) {
           searchTime = 4 * i;
-          setTimeout(() => {
-            document.querySelector(`${work[i].at}`).classList.add('travel');
-          }, searchTime);
+          // setTimeout(() => {
+          //   document.querySelector(`${work[i].at}`).classList.add('travel');
+          // }, searchTime);
           let { at, route } = work[i];
           for (let place of graph[at]) {
             if (to.includes(place)) {
+              array.splice(array.indexOf(place), 1, [
+                route,
+                route.length,
+                place,
+              ]);
+              console.log(from, place, route.length);
               let index = to.indexOf(place);
-              let pop = to.splice(index, 1);
-              for (let j = 0; j < route.length; j++) {
-                routeTime = searchTime;
-                setTimeout(() => {
-                  document.querySelector(`${route[j]}`).classList.add('route');
-                }, 60 * j + searchTime);
-                routeTime += 60 * j;
-              }
-              return setTimeout(() => {
-                findRoute(graph, pop, to);
-              }, routeTime);
+              to.splice(index, 1);
+              // for (let j = 0; j < route.length; j++) {
+              //   routeTime = searchTime;
+              //   setTimeout(() => {
+              //     document.querySelector(`${route[j]}`).classList.add('route');
+              //   }, 60 * j + searchTime);
+              //   routeTime += 60 * j;
+              // }
+              // return setTimeout(() => {
+              //   findRoute(graph, from, to);
+              // }, routeTime);
+              findRoute(graph, from, to, array);
             }
             if (!work.some((w) => w.at == place)) {
               work.push({ at: place, route: route.concat(place) });
@@ -192,16 +247,32 @@ export default function App() {
         }
       }
 
-      const triggerEndNode = () => {
-        trigger = true;
-        findRoute(newGraph, endSearch[0], [endGraph]);
-      };
+      let perm = directions.map((item) => item);
+      perm = [startGraph, ...perm];
+      for (let i = 0; i < perm.length; i++) {
+        permGraph[perm[i]] = perm;
+        let parentNode = perm[i];
+        let destinationNode = perm
+          .map((item) => item != parentNode && item)
+          .filter((node) => node != false);
+        let permArray = perm.map((item) => item);
 
-      if (parcels.length > 0) findRoute(newGraph, startGraph, directions);
-      else {
-        trigger = true;
-        findRoute(newGraph, startGraph, [endGraph]);
+        findRoute(newGraph, parentNode, destinationNode, permArray);
       }
+
+      console.log(permGraph);
+      console.log(permArray[0][2][0]);
+
+      // const triggerEndNode = () => {
+      //   trigger = true;
+      //   findRoute(newGraph, endSearch[0], [endGraph]);
+      // };
+
+      // if (parcels.length > 0) findRoute(newGraph, startGraph, directions);
+      // else {
+      //   trigger = true;
+      //   findRoute(newGraph, startGraph, [endGraph]);
+      // }
     }
   };
 
