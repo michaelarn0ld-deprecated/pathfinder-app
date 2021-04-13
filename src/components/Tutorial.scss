@@ -19,32 +19,24 @@
   position: absolute;
   height: 6vh;
   width: 50%;
-  background-color: #2b2d42;
+  background-color: white;
   border: 2px solid #2b2d42;
   border-radius: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 900ms, height 900ms, background-color 900ms 900ms,
-    color 900ms 900ms;
+  transition: 900ms;
   transform: translateY(calc(86vh + 55px));
-  color: white;
-  &:hover {
-    background: white;
-    transition: 900ms;
-    color: #2b2d42;
-  }
+  color: #2b2d42;
 }
 
 .arrow-up {
-  transform: rotate(180deg);
   transition: transform 900ms;
   cursor: pointer;
 }
 
 .arrow-down {
-  transform: translateY(1vh);
-  transition: 900ms;
+  transform: translateY(-1vh);
   cursor: pointer;
 }
 
@@ -79,4 +71,25 @@
 }
 .fas.fa-book {
   transform: translateY(5px);
+}
+
+.far.fa-times-circle {
+  font-size: 2rem;
+}
+
+.fade-in {
+  animation-name: example;
+  animation-duration: 1.5s;
+}
+
+@keyframes example {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

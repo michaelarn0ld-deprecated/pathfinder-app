@@ -24,14 +24,26 @@ export default function App() {
     switch (e.key) {
       case 'w':
         wallToggle = true;
+        nodeToggle = false;
+        startToggle = false;
+        endToggle = false;
         break;
       case 'd':
+        wallToggle = false;
         nodeToggle = true;
+        startToggle = false;
+        endToggle = false;
         break;
       case 's':
+        wallToggle = false;
+        nodeToggle = false;
         startToggle = true;
+        endToggle = false;
         break;
       case 'e':
+        wallToggle = false;
+        nodeToggle = false;
+        startToggle = false;
         endToggle = true;
         break;
       default:
@@ -39,11 +51,8 @@ export default function App() {
     }
   });
 
-  document.addEventListener('keyup', () => {
+  document.addEventListener('keyup', (e) => {
     wallToggle = false;
-    nodeToggle = false;
-    startToggle = false;
-    endToggle = false;
   });
 
   useEffect(() => {
@@ -53,7 +62,7 @@ export default function App() {
         if (wallToggle) node.classList.add('wall');
       });
       node.addEventListener('click', () => {
-        if (nodeToggle) {
+        if (nodeToggle && parcels.length <= 5) {
           node.classList.remove('address');
           node.classList.add('address');
           if (!parcels.includes(node) && node.classList.value.includes('node'))
@@ -82,19 +91,19 @@ export default function App() {
 
   let startNode;
   let endNode;
-  let endSearch;
-  let searchTime = 0;
-  let routeTime = 0;
+  // let endSearch;
+  // let searchTime = 0;
+  // let routeTime = 0;
   let parcels = [];
   let directions = [];
-  let trigger = false;
+  // let trigger = false;
   let permGraph = Object.create(null);
   let permArray = [];
   let endArray = [];
 
   const pathButton = () => {
-    if (startNode === undefined || endNode === undefined)
-      alert('Select a start node and an end node');
+    if (startNode === undefined || endNode === undefined || parcels.length < 1)
+      alert('Select a start node, an end node, and at least one detour node');
     else {
       const nodesArray = [...documentNodes].map((node) => node.classList);
       const stringifyNodesArray = [...documentNodes].map((item) => {
@@ -214,7 +223,6 @@ export default function App() {
       // ----------------------------------------------------------------------------
 
       const findRoute = (graph, from, to, array, args) => {
-        // CSS STYLING CODE HERE
         if (to.length === 0) {
           array.splice(array.indexOf(from), 1, 0);
           permArray.push(array);
@@ -222,7 +230,6 @@ export default function App() {
         }
         let work = [{ at: from, route: [] }];
         for (let i = 0; i < work.length; i++) {
-          searchTime = 4 * i;
           let { at, route } = work[i];
           for (let place of graph[at]) {
             if (to.includes(place)) {
@@ -233,7 +240,6 @@ export default function App() {
               ]);
               let index = to.indexOf(place);
               to.splice(index, 1);
-              // -----TIMING CODE HERE -----
               findRoute(graph, from, to, array);
             }
             if (!work.some((w) => w.at == place)) {
@@ -263,64 +269,69 @@ export default function App() {
       endArray = endPerm.map((item) => item);
       findRoute(newGraph, endGraph, endDestinations, endArray);
 
-      console.log(permGraph);
-      for (let array of permArray[permArray.length - 1]) {
-        if (array != 0) array[0].reverse();
-      }
+      if (permArray.length === 0) {
+        alert('No possible path\nResetting board...');
+        clearBoard();
+      } else {
+        for (let array of permArray[permArray.length - 1]) {
+          if (array != 0) array[0].reverse();
+        }
 
-      const permutator = (inputArr) => {
-        let result = [];
+        const permutator = (inputArr) => {
+          let result = [];
 
-        const permute = (arr, m = []) => {
-          if (arr.length === 0) {
-            result.push(m);
-          } else {
-            for (let i = 0; i < arr.length; i++) {
-              let curr = arr.slice();
-              let next = curr.splice(i, 1);
-              permute(curr.slice(), m.concat(next));
+          const permute = (arr, m = []) => {
+            if (arr.length === 0) {
+              result.push(m);
+            } else {
+              for (let i = 0; i < arr.length; i++) {
+                let curr = arr.slice();
+                let next = curr.splice(i, 1);
+                permute(curr.slice(), m.concat(next));
+              }
             }
-          }
+          };
+
+          permute(inputArr);
+
+          return result;
         };
 
-        permute(inputArr);
-
-        return result;
-      };
-
-      const tsp = (vertices, s, graph) => {
-        const vertex = [];
-        for (let i = 0; i < vertices; i++) {
-          if (i != s) vertex.push(i);
-        }
-        let minDistance = Infinity;
-        let minPath = [];
-        let permutations = permutator(vertex);
-        for (let i of permutations) {
-          let currentDistance = 0;
-          let currentPath = [];
-          let k = s;
-          for (let j of i) {
-            currentDistance += graph[k][j][1];
-            currentPath.push(graph[k][j][0]);
-            k = j;
+        const tsp = (vertices, s, graph) => {
+          const vertex = [];
+          for (let i = 0; i < vertices; i++) {
+            if (i != s) vertex.push(i);
           }
-          currentDistance += graph[graph.length - 1][k][1];
-          currentPath.push(graph[graph.length - 1][k][0]);
-          if (currentDistance < minDistance) {
-            minDistance = currentDistance;
-            minPath = currentPath;
+          let minDistance = Infinity;
+          let minPath = [];
+          let permutations = permutator(vertex);
+          for (let i of permutations) {
+            let currentDistance = 0;
+            let currentPath = [];
+            let k = s;
+            for (let j of i) {
+              currentDistance += graph[k][j][1];
+              currentPath.push(graph[k][j][0]);
+              k = j;
+            }
+            currentDistance += graph[graph.length - 1][k][1];
+            currentPath.push(graph[graph.length - 1][k][0]);
+            if (currentDistance < minDistance) {
+              minDistance = currentDistance;
+              minPath = currentPath;
+            }
           }
-        }
-        return minPath;
-      };
+          return minPath;
+        };
 
-      let shortestPath = [].concat(...tsp(permArray.length - 1, 0, permArray));
-      for (let j = 0; j < shortestPath.length; j++) {
-        routeTime = searchTime;
-        setTimeout(() => {
-          document.querySelector(`${shortestPath[j]}`).classList.add('route');
-        }, 60 * j);
+        let shortestPath = [].concat(
+          ...tsp(permArray.length - 1, 0, permArray)
+        );
+        for (let j = 0; j < shortestPath.length; j++) {
+          setTimeout(() => {
+            document.querySelector(`${shortestPath[j]}`).classList.add('route');
+          }, 60 * j);
+        }
       }
     }
   };
@@ -338,14 +349,13 @@ export default function App() {
           'route'
         );
     });
-    documentNodes.forEach((node) => console.log(node.classList));
     startNode = undefined;
     endNode = undefined;
-    searchTime = 0;
-    routeTime = 0;
+    // searchTime = 0;
+    // routeTime = 0;
     parcels = [];
     directions = [];
-    trigger = false;
+    // trigger = false;
     permGraph = Object.create(null);
     permArray = [];
     endArray = [];
