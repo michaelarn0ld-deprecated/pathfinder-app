@@ -23,8 +23,8 @@ This application is an implementation of the infamous _Traveling Salesman Proble
 
 ## References
 
-Skiena, S. S. (2020). _The algorithm design manual_. Springer International Publishing.
-Haverbeke, M. (2018). _Eloquent JavaScript: a modern introduction to programming_. No Starch Press.
+1. Skiena, S. S. (2020). _The algorithm design manual_. Springer International Publishing.
+2. Haverbeke, M. (2018). _Eloquent JavaScript: a modern introduction to programming_. No Starch Press.
 
 ## License & Copywright
 
